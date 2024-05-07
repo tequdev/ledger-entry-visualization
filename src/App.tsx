@@ -149,7 +149,7 @@ function App() {
         }}
         animate={{ rotate: 180, scale: 1 }}
         transition={{
-          delay: index * 0.01,
+          delay: index * 0.015,
           type: 'spring',
           stiffness: 260,
           damping: 20,
@@ -163,22 +163,40 @@ function App() {
       <h1>Live Ledger Entries</h1>
       <h3>{ledgerIndex}</h3>
       <motion.div initial={{ minHeight: '240px' }}>
+        <motion.div initial={{ textAlign: 'left' }}>Created:</motion.div>
         <motion.div
-          initial={{ display: 'flex', flexWrap: 'wrap', marginBottom: 12 }}
+          initial={{
+            display: 'flex',
+            flexWrap: 'wrap',
+            minHeight: 24,
+            marginBottom: 12,
+          }}
         >
           {nodes.created.map((c, i) => (
             <Box key={c.index} index={i} color="blue" />
           ))}
         </motion.div>
+        <motion.div initial={{ textAlign: 'left' }}>Modified:</motion.div>
         <motion.div
-          initial={{ display: 'flex', flexWrap: 'wrap', marginBottom: 12 }}
+          initial={{
+            display: 'flex',
+            flexWrap: 'wrap',
+            minHeight: 24,
+            marginBottom: 12,
+          }}
         >
           {nodes.modified.map((c, i) => (
             <Box key={c.index} index={i} color="green" />
           ))}
         </motion.div>
+        <motion.div initial={{ textAlign: 'left' }}>Deleted:</motion.div>
         <motion.div
-          initial={{ display: 'flex', flexWrap: 'wrap', marginBottom: 36 }}
+          initial={{
+            display: 'flex',
+            flexWrap: 'wrap',
+            minHeight: 24,
+            marginBottom: 36,
+          }}
         >
           {nodes.deleted.map((c, i) => (
             <Box key={c.index} index={i} color="red" />
@@ -190,6 +208,7 @@ function App() {
         initial={{
           display: 'flex',
           flexWrap: 'wrap',
+          justifyContent: 'space-around',
           alignContent: 'flex-start',
         }}
       >
@@ -204,7 +223,7 @@ function App() {
                 margin: 4,
                 borderStyle: 'solid',
                 borderColor: 'gray',
-                width: '23%',
+                width: '300px',
                 minHeight: '120px',
               }}
               animate={{ opacity: 1 }}
