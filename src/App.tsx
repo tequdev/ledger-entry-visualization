@@ -160,7 +160,7 @@ function App() {
 
   return (
     <>
-      <h1>Real-time Ledger Entries changes</h1>
+      <h1>Live Ledger Entries</h1>
       <h3>{ledgerIndex}</h3>
       <motion.div initial={{ minHeight: '240px' }}>
         <motion.div
