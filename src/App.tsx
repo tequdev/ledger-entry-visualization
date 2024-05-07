@@ -39,15 +39,17 @@ function App() {
   const [ledgerIndex, setLedgerIndex] = useState<number>()
   const [ledgerEntries, setLedgerEntries] = useState<string[]>([])
   const [nodes, setNodes] = useState<
-    { ledgerIndex: number } & Record<
-      'created' | 'modified' | 'deleted',
-      { LedgerEntryType: string; index: string }[]
-    >
-  >({ ledgerIndex: 0, created: [], modified: [], deleted: [] })
+    Record<'ledgerIndex' | 'transactions', number> &
+      Record<
+        'created' | 'modified' | 'deleted',
+        { LedgerEntryType: string; index: string }[]
+      >
+  >({ ledgerIndex: 0, transactions: 0, created: [], modified: [], deleted: [] })
 
   useEffect(() => {
     const lastNodes: typeof nodes = {
       ledgerIndex: 0,
+      transactions: 0,
       created: [],
       modified: [],
       deleted: [],
@@ -72,6 +74,7 @@ function App() {
         lastNodes.created = []
         lastNodes.modified = []
         lastNodes.deleted = []
+        lastNodes.transactions = 0
       }
       lastNodes.created.push(
         ...createdNodes.map((value) => ({
@@ -95,7 +98,10 @@ function App() {
       lastNodes.created = uniqNodes(lastNodes.created)
       lastNodes.modified = uniqNodes(lastNodes.modified)
       lastNodes.deleted = uniqNodes(lastNodes.deleted)
+
+      lastNodes.transactions += 1
     }
+
     const ledgerClosedHandler = (ledger: LedgerStream) => {
       setLedgerIndex(ledger.ledger_index - 1)
       setNodes(lastNodes)
@@ -161,9 +167,13 @@ function App() {
   return (
     <>
       <h1>Live Ledger Entries</h1>
-      <h3>{ledgerIndex}</h3>
+      <h3>
+        {ledgerIndex ? `${ledgerIndex} / ${nodes.transactions} txns` : '\u00A0'}
+      </h3>
       <motion.div initial={{ minHeight: '240px' }}>
-        <motion.div initial={{ textAlign: 'left' }}>Created:</motion.div>
+        <motion.div initial={{ textAlign: 'left' }}>
+          Created: {nodes.created.length}
+        </motion.div>
         <motion.div
           initial={{
             display: 'flex',
@@ -176,7 +186,9 @@ function App() {
             <Box key={c.index} index={i} color="blue" />
           ))}
         </motion.div>
-        <motion.div initial={{ textAlign: 'left' }}>Modified:</motion.div>
+        <motion.div initial={{ textAlign: 'left' }}>
+          Modified: {nodes.modified.length}
+        </motion.div>
         <motion.div
           initial={{
             display: 'flex',
@@ -189,7 +201,9 @@ function App() {
             <Box key={c.index} index={i} color="green" />
           ))}
         </motion.div>
-        <motion.div initial={{ textAlign: 'left' }}>Deleted:</motion.div>
+        <motion.div initial={{ textAlign: 'left' }}>
+          Deleted: {nodes.deleted.length}
+        </motion.div>
         <motion.div
           initial={{
             display: 'flex',
@@ -209,7 +223,6 @@ function App() {
           display: 'flex',
           flexWrap: 'wrap',
           justifyContent: 'space-around',
-          alignContent: 'flex-start',
         }}
       >
         {ledgerEntries
