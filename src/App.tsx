@@ -129,7 +129,15 @@ function App() {
     }
   }, [])
 
-  const Box = ({ color }: { color: string }) => {
+  const nodesByLedgerEntryType = (entry: string) => {
+    return {
+      created: nodes.created.filter((node) => node.LedgerEntryType === entry),
+      modified: nodes.modified.filter((node) => node.LedgerEntryType === entry),
+      deleted: nodes.deleted.filter((node) => node.LedgerEntryType === entry),
+    }
+  }
+
+  const Box = ({ color, index }: { color: string; index: number }) => {
     return (
       <motion.div
         initial={{
@@ -141,6 +149,7 @@ function App() {
         }}
         animate={{ rotate: 180, scale: 1 }}
         transition={{
+          delay: index * 0.01,
           type: 'spring',
           stiffness: 260,
           damping: 20,
@@ -151,28 +160,28 @@ function App() {
 
   return (
     <>
-      <h1>Ledger Entries</h1>
+      <h1>Real-time Ledger Entries changes</h1>
       <h3>{ledgerIndex}</h3>
       <motion.div initial={{ minHeight: '240px' }}>
         <motion.div
           initial={{ display: 'flex', flexWrap: 'wrap', marginBottom: 12 }}
         >
-          {nodes.created.map((c) => (
-            <Box key={c.index} color="blue" />
+          {nodes.created.map((c, i) => (
+            <Box key={c.index} index={i} color="blue" />
           ))}
         </motion.div>
         <motion.div
           initial={{ display: 'flex', flexWrap: 'wrap', marginBottom: 12 }}
         >
-          {nodes.modified.map((c) => (
-            <Box key={c.index} color="green" />
+          {nodes.modified.map((c, i) => (
+            <Box key={c.index} index={i} color="green" />
           ))}
         </motion.div>
         <motion.div
           initial={{ display: 'flex', flexWrap: 'wrap', marginBottom: 36 }}
         >
-          {nodes.deleted.map((c) => (
-            <Box key={c.index} color="red" />
+          {nodes.deleted.map((c, i) => (
+            <Box key={c.index} index={i} color="red" />
           ))}
         </motion.div>
       </motion.div>
@@ -210,21 +219,27 @@ function App() {
                   paddingRight: 8,
                 }}
               >
-                {nodes.created
-                  .filter((node) => node.LedgerEntryType === entry)
-                  .map((node) => (
-                    <Box key={node.index} color="blue" />
-                  ))}
-                {nodes.modified
-                  .filter((node) => node.LedgerEntryType === entry)
-                  .map((node) => (
-                    <Box key={node.index} color="green" />
-                  ))}
-                {nodes.deleted
-                  .filter((node) => node.LedgerEntryType === entry)
-                  .map((node) => (
-                    <Box key={node.index} color="red" />
-                  ))}
+                {nodesByLedgerEntryType(entry).created.map((node, i) => (
+                  <Box key={node.index} index={i} color="blue" />
+                ))}
+                {nodesByLedgerEntryType(entry).modified.map((node, i) => (
+                  <Box
+                    key={node.index}
+                    index={nodesByLedgerEntryType(entry).created.length + i}
+                    color="green"
+                  />
+                ))}
+                {nodesByLedgerEntryType(entry).deleted.map((node, i) => (
+                  <Box
+                    key={node.index}
+                    index={
+                      nodesByLedgerEntryType(entry).created.length +
+                      nodesByLedgerEntryType(entry).modified.length +
+                      i
+                    }
+                    color="red"
+                  />
+                ))}
               </motion.div>
             </motion.div>
           ))}
